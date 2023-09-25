@@ -12,10 +12,7 @@ namespace redis_infrastructure.RedisInfrastructure
         public RedisConnection(IOptions<RedisSettings> redisSettings)
         {
             _redisConnectionProvider = new Lazy<RedisConnectionProvider>(
-
-
-
-                () => new RedisConnectionProvider(ConfigurationOptions.Parse(redisSettings.Value.ConnectionString))
+                    () => new RedisConnectionProvider(ConfigurationOptions.Parse(redisSettings.Value.ConnectionString))
                 );
         }
 

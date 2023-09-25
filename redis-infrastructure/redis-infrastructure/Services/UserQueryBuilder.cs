@@ -1,11 +1,12 @@
-﻿using redis_infrastructure.Models;
+﻿using Redis.OM.Searching;
+using redis_infrastructure.Models;
 using redis_infrastructure.RedisInfrastructure;
 
 namespace redis_infrastructure.Services
 {
     public class UserQueryBuilder
     {
-        private IEnumerable<User> _query;
+        private IQueryable<User> _query;
 
         public UserQueryBuilder(RedisConnection redisConnection)
         {
@@ -18,7 +19,7 @@ namespace redis_infrastructure.Services
             {
                 return this;
             }
-            _query = _query.Where(x => string.Equals(x.FirstName, firstName, StringComparison.OrdinalIgnoreCase));
+            _query = _query.Where(x => x.FirstName == firstName);
             return this;
         }
 
@@ -28,7 +29,7 @@ namespace redis_infrastructure.Services
             {
                 return this;
             }
-            _query = _query.Where(x => string.Equals(x.LastName, lastName, StringComparison.OrdinalIgnoreCase));
+            _query = _query.Where(x => x.LastName == lastName);
             return this;
         }
 
@@ -38,7 +39,7 @@ namespace redis_infrastructure.Services
             {
                 return this;
             }
-            _query = _query.Where(x => string.Equals(x.Email, email, StringComparison.OrdinalIgnoreCase));
+            _query = _query.Where(x => x.Email == email);
             return this;
         }
 
@@ -52,9 +53,10 @@ namespace redis_infrastructure.Services
             return this;
         }
 
-        public List<User> Build()
+        public Task<IList<User>> BuildAsync()
         {
-            return _query.ToList();
+            var redisQuery = _query as IRedisCollection<User>;
+            return redisQuery.ToListAsync();
         }
     }
 }

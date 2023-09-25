@@ -33,7 +33,7 @@ namespace redis_infrastructure.Controllers
             return StatusCode(StatusCodes.Status201Created, id);
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetUserAsync([FromQuery] string id, CancellationToken cancellationToken)
         {
             var user = await _connection.GetRedisCollection<User>().FindByIdAsync(id);
@@ -46,16 +46,16 @@ namespace redis_infrastructure.Controllers
             return Ok(user);
         }
 
-        [HttpPost("/find")]
+        [HttpPost("find")]
         public async Task<IActionResult> FindUsersAsync([FromBody] UserSearchRequest userSearchRequest, CancellationToken cancellationToken)
         {
             var builder = new UserQueryBuilder(_connection);
-            var users = builder
+            var users = await builder
                 .WithFirstName(userSearchRequest.FirstName)
                 .WithLastName(userSearchRequest.LastName)
                 .WithEmail(userSearchRequest.Email)
                 .WithAgeUpperThen(userSearchRequest.Age)
-                .Build();
+                .BuildAsync();
             _logger.LogInformation("Find users");
             return Ok(users);
         }
